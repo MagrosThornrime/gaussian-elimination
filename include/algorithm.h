@@ -6,10 +6,10 @@
 void addEdgesFromDependency(DiekertGraph& graph, const DependencyGraph& dependency);
 
 // apply the transitive reduction to the Diekert graph
-DiekertGraph reduceTransitively(DiekertGraph& graph, const std::string& word);
+DiekertGraph reduceTransitively(DiekertGraph& graph, const std::vector<std::string>& word);
 
 // create a Diekert graph from a word and a dependency graph
-DiekertGraph createDiekertGraph(const std::string& word, const DependencyGraph& dependency);
+DiekertGraph createDiekertGraph(const std::vector<std::string>& word, const DependencyGraph& dependency);
 
 // apply a modified BFS to find Foata levels for each Node in Diekert graph
 std::vector<int> getFoataMaxPaths(DiekertGraph& diekert);
@@ -18,7 +18,7 @@ std::vector<int> getFoataMaxPaths(DiekertGraph& diekert);
 void printFoataForm(DiekertGraph& diekert, const std::vector<int>& maxPaths);
 
 // create a dependency graph
-DependencyGraph dependencyGraph(const std::map<char, Transaction>& transactions);
+DependencyGraph dependencyGraph(const std::map<std::string, Transaction>& transactions);
 
 // create an independency graph
-DependencyGraph independencyGraph(const DependencyGraph& dependency, const std::set<char>& alphabet);
+DependencyGraph independencyGraph(const DependencyGraph& dependency, const std::set<std::string>& alphabet);

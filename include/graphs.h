@@ -5,7 +5,7 @@
 #include <map>
 
 struct Node {
-    char transactionID;
+    std::string transactionID;
     std::vector<int> neighbors;
 };
 
@@ -20,22 +20,22 @@ struct Graph {
 };
 
 struct DependencyGraph : Graph {
-    std::map<char, int> indexes;
+    std::map<std::string, int> indexes;
 
     // print all edges in the graph
     void printEdges() const;
 
     // check if there exists a Node with given transaction id
-    bool containsNode(char transactionID) const;
+    bool containsNode(const std::string& transactionID) const;
 
     // check if there exists an edge of given Nodes
-    bool containsEdge(char key1, char key2) const;
+    bool containsEdge(const std::string& key1, const std::string& key2) const;
 
     // add an empty Node with given transaction id
-    void addNode(char transactionID);
+    void addNode(const std::string& transactionID);
 
     // add and edge between two given Nodes
-    void addEdge(char key1, char key2);
+    void addEdge(const std::string& key1, const std::string& key2);
 };
 
 struct DiekertGraph : Graph {
@@ -49,11 +49,11 @@ struct DiekertGraph : Graph {
     Node& getNode(int index);
 
     // add an empty Node with given transaction id
-    void addNode(char transactionID);
+    void addNode(const std::string& transactionID);
 
     // check if there is an edge of two given Nodes
     bool containsEdge(int from, int to) const;
 
     // create empty Nodes for each transaction in word
-    void addNodesFromWord(const std::string& word);
+    void addNodesFromWord(const std::vector<std::string>& word);
 };

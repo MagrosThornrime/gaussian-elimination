@@ -16,7 +16,7 @@ void addEdgesFromDependency(DiekertGraph& graph, const DependencyGraph& dependen
     }
 }
 
-DiekertGraph reduceTransitively(DiekertGraph& graph, const std::string& word) {
+DiekertGraph reduceTransitively(DiekertGraph& graph, const std::vector<std::string>& word) {
     DiekertGraph transitive;
     transitive.addNodesFromWord(word);
     for(int start=0; start<graph.getSize(); start++) {
@@ -49,7 +49,7 @@ DiekertGraph reduceTransitively(DiekertGraph& graph, const std::string& word) {
     return transitive;
 }
 
-DiekertGraph createDiekertGraph(const std::string& word, const DependencyGraph& dependency) {
+DiekertGraph createDiekertGraph(const std::vector<std::string>& word, const DependencyGraph& dependency) {
     DiekertGraph graph;
     graph.addNodesFromWord(word);
     addEdgesFromDependency(graph, dependency);
@@ -105,7 +105,7 @@ void printFoataForm(DiekertGraph& diekert, const std::vector<int>& maxPaths) {
     }
 }
 
-DependencyGraph dependencyGraph(const std::map<char, Transaction>& transactions) {
+DependencyGraph dependencyGraph(const std::map<std::string, Transaction>& transactions) {
     DependencyGraph graph;
     for (auto const key1 : std::views::keys(transactions)) {
         for (auto const key2 : std::views::keys(transactions)) {
@@ -126,7 +126,7 @@ DependencyGraph dependencyGraph(const std::map<char, Transaction>& transactions)
     return graph;
 }
 
-DependencyGraph independencyGraph(const DependencyGraph& dependency, const std::set<char>& alphabet) {
+DependencyGraph independencyGraph(const DependencyGraph& dependency, const std::set<std::string>& alphabet) {
     DependencyGraph graph;
     for(auto const key : std::views::keys(dependency.indexes)) {
         graph.addNode(key);

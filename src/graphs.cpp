@@ -33,18 +33,18 @@ void DependencyGraph::printEdges() const {
     std::cout << "{";
     for (const auto& node : nodes) {
         for(const auto& neighbor : node.neighbors) {
-            char neighborID = nodes.at(neighbor).transactionID;
+            std::string neighborID = nodes.at(neighbor).transactionID;
             std::cout << "(" << node.transactionID << "," << neighborID << "), ";
         }
     }
     std::cout << "}" << std::endl;
 }
 
-bool DependencyGraph::containsNode(char transactionID) const {
+bool DependencyGraph::containsNode(const std::string& transactionID) const {
     return indexes.contains(transactionID);
 }
 
-bool DependencyGraph::containsEdge(char key1, char key2) const {
+bool DependencyGraph::containsEdge(const std::string& key1, const std::string& key2) const {
     if(!indexes.contains(key1) || !indexes.contains(key2)) {
         return false;
     }
@@ -54,12 +54,12 @@ bool DependencyGraph::containsEdge(char key1, char key2) const {
     return std::ranges::find(neighbors1, index2) != neighbors1.end();
 }
 
-void DependencyGraph::addNode(char transactionID) {
+void DependencyGraph::addNode(const std::string& transactionID) {
     indexes[transactionID] = nodes.size();
     nodes.emplace_back(transactionID);
 }
 
-void DependencyGraph::addEdge(char key1, char key2) {
+void DependencyGraph::addEdge(const std::string& key1, const std::string& key2) {
     if(key1 != key2) {
         int index1 = indexes.at(key1);
         int index2 = indexes.at(key2);
@@ -88,7 +88,7 @@ Node& DiekertGraph::getNode(int index) {
     return nodes.at(index);
 }
 
-void DiekertGraph::addNode(char transactionID) {
+void DiekertGraph::addNode(const std::string& transactionID) {
     nodes.emplace_back(transactionID);
 }
 
@@ -97,8 +97,8 @@ bool DiekertGraph::containsEdge(int from, int to) const {
     return std::ranges::find(nodeFrom.neighbors, to) != nodeFrom.neighbors.end();
 }
 
-void DiekertGraph::addNodesFromWord(const std::string &word) {
-    for(const auto letter : word) {
+void DiekertGraph::addNodesFromWord(const std::vector<std::string> &word) {
+    for(const auto& letter : word) {
         addNode(letter);
     }
 }
