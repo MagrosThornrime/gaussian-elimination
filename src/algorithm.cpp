@@ -107,8 +107,8 @@ void printFoataForm(DiekertGraph& diekert, const std::vector<int>& maxPaths) {
 
 DependencyGraph dependencyGraph(const std::map<std::string, Transaction>& transactions) {
     DependencyGraph graph;
-    for (auto const key1 : std::views::keys(transactions)) {
-        for (auto const key2 : std::views::keys(transactions)) {
+    for (auto const& key1 : std::views::keys(transactions)) {
+        for (auto const& key2 : std::views::keys(transactions)) {
             const Transaction& first = transactions.at(key1);
             const Transaction& second = transactions.at(key2);
             if(!Transaction::areDependent(first, second) || graph.containsEdge(key1, key2)) {
@@ -128,11 +128,11 @@ DependencyGraph dependencyGraph(const std::map<std::string, Transaction>& transa
 
 DependencyGraph independencyGraph(const DependencyGraph& dependency, const std::set<std::string>& alphabet) {
     DependencyGraph graph;
-    for(auto const key : std::views::keys(dependency.indexes)) {
+    for(auto const& key : std::views::keys(dependency.indexes)) {
         graph.addNode(key);
     }
-    for(const auto from : alphabet) {
-        for(const auto to : alphabet) {
+    for(const auto& from : alphabet) {
+        for(const auto& to : alphabet) {
             if(!dependency.containsEdge(from, to) && !graph.containsEdge(from, to)) {
                 graph.addEdge(from, to);
             }

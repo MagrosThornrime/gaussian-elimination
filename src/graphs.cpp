@@ -11,7 +11,7 @@ void Graph::saveAsDot(const std::string& filename) const {
     }
     for(int i=0; i < nodes.size(); i++) {
         const Node& node = nodes.at(i);
-        fileContent += std::to_string(i) + "[label=" + node.transactionID + "]\n";
+        fileContent += std::to_string(i) + "[label=\"" + node.transactionID + "\"]\n";
     }
     fileContent += "}";
     std::ofstream file(filename);
