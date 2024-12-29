@@ -9,8 +9,10 @@ add_executable(gauss
         main.cu
         src/transaction.cpp
         src/graphs.cpp
-        src/algorithm.cpp
+        src/foata.cpp
+        src/elimination.cu
         include/transaction.h
         include/graphs.h
-        include/algorithm.h
+        include/foata.h
+        include/elimination.cuh
 )

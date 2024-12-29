@@ -1,4 +1,4 @@
-#include "../include/algorithm.h"
+#include "../include/foata.h"
 #include <map>
 #include <vector>
 #include <ranges>
