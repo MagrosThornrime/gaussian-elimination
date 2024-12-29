@@ -2,3 +2,5 @@
 cmake-build-debug/
 graph.dot
 build/
+input.txt
+output.txt

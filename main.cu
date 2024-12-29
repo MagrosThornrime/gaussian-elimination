@@ -4,7 +4,9 @@
 
 #include "include/algorithm.h"
 
-const std::string OUTPUT_FILENAME = "../graph.dot";
+const std::string GRAPH_OUTPUT = "../graph.dot";
+const std::string INPUT = "../input.txt";
+const std::string OUTPUT = "../output.txt";
 
 void generateTransactions(std::vector<Transaction>& transactions, int matrixSize) {
     for(int i=0; i<matrixSize-1; i++) {
@@ -53,7 +55,7 @@ void calculateFoata(int matrixSize) {
     std::cout << "FNF = ";
     printFoataForm(diekert, foataMaxPaths);
 
-    diekert.saveAsDot(OUTPUT_FILENAME);
+    diekert.saveAsDot(GRAPH_OUTPUT);
 }
 
 __global__ void findMultiplier(const double* matrix, const int* indices, double* multipliers, int matrixRowSize,
@@ -79,24 +81,20 @@ __global__ void multiplyAndSubtractRow(double* matrix, const int* indices, const
     matrix[k * matrixRowSize + j] -= matrix[i * matrixRowSize + j] * multipliers[k *multipliersRowSize + i];
 }
 
-void generateRandomMatrix(std::vector<double>& matrix, int rows, int columns, double minValue, double maxValue) {
-    for(int i=0; i<rows * (columns + 1); i++) {
-        matrix.push_back(minValue + rand() / (RAND_MAX/(maxValue-minValue)));
-    }
-}
-
-void printMatrix(const std::vector<double>& matrix, int rows, int columns) {
-    std::cout << rows << std::endl;
+void saveMatrix(const std::vector<double>& matrix, int rows, int columns, const std::string& path) {
+    std::ofstream file(path);
+    file << rows << std::endl;
     for(int i=0; i<rows; i++) {
         for(int j=0; j<columns-1; j++) {
-            std::cout << std::setprecision(16) << std::fixed <<matrix[i * columns + j] << " ";
+            file << std::setprecision(16) << std::fixed << matrix[i * columns + j] << " ";
         }
-        std::cout<<std::endl;
+        file << std::endl;
     }
     for(int i=0; i<rows; i++) {
-        std::cout<<std::setprecision(16) << std::fixed<<matrix[i*columns + columns - 1] << " ";
+        file <<std::setprecision(16) << std::fixed << matrix[i*columns + columns - 1] << " ";
     }
-    std::cout<<std::endl << std::endl;
+    file << std::endl;
+    file.close();
 }
 
 void calculateGaussianElimination(std::vector<double>& matrix, int rows, int columns) {
@@ -158,15 +156,33 @@ void transformIntoSingular(std::vector<double>& matrix, int rows, int columns) {
     }
 }
 
-
+int readMatrix(std::vector<double>& matrix, const std::string& path) {
+    std::ifstream file(path);
+    int rows;
+    file >> rows;
+    std::vector<double> coefficients(rows * rows);
+    for(int i=0; i<rows*rows; i++) {
+        file >> coefficients[i];
+    }
+    std::vector<double> RHS(rows);
+    for(int i=0; i<rows; i++) {
+        file >> RHS[i];
+    }
+    file.close();
+    for(int i=0; i<rows; i++) {
+        for(int j=0; j<rows; j++) {
+            matrix.push_back(coefficients[i * rows + j]);
+        }
+        matrix.push_back(RHS[i]);
+    }
+    return rows;
+}
 
 int main(){
-    const int rows = 10;
-    const int columns = rows + 1;
     std::vector<double> matrix;
-    generateRandomMatrix(matrix, rows,  columns, 0.0, 40.0);
-    printMatrix(matrix, rows, columns);
+    const int rows = readMatrix(matrix, INPUT);
+    const int columns = rows + 1;
     calculateGaussianElimination(matrix, rows, columns);
     transformIntoSingular(matrix, rows, columns);
-    printMatrix(matrix, rows, columns);
+    saveMatrix(matrix, rows, columns, OUTPUT);
 }
