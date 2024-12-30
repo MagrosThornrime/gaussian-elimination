@@ -4,13 +4,13 @@
 #include "../include/elimination.cuh"
 
 __global__ void findMultiplier(const double* matrix, const int* indices, double* multipliers, int matrixRowSize,
-                                int indicesSize, int multipliersRowSize) {
+                               int indicesSize, int multipliersRowSize) {
     const int currentIndex = blockIdx.x * blockDim.x + threadIdx.x;
     if(currentIndex >= indicesSize) {
         return;
     }
-    const int i = indices[2 * currentIndex];
-    const int k = indices[2 * currentIndex + 1];
+    const int i = indices[currentIndex * 2];
+    const int k = indices[currentIndex * 2 + 1];
     multipliers[k * multipliersRowSize + i] = matrix[k * matrixRowSize + i] / matrix[i * matrixRowSize + i];
 }
 
@@ -20,11 +20,23 @@ __global__ void multiplyAndSubtractRow(double* matrix, const int* indices, const
     if(currentIndex >= indicesSize) {
         return;
     }
-    const int i = indices[3 * currentIndex];
-    const int j = indices[3 * currentIndex + 1];
-    const int k = indices[3 * currentIndex + 2];
+    const int i = indices[currentIndex * 3];
+    const int j = indices[currentIndex * 3 + 1];
+    const int k = indices[currentIndex * 3 + 2];
+
     matrix[k * matrixRowSize + j] -= matrix[i * matrixRowSize + j] * multipliers[k *multipliersRowSize + i];
 }
+
+__global__ void performTransactions(double* matrix, double* multipliers, double* subtractors, int matrixRowSize,
+                                    int multipliersRowSize, const Transaction* transactions, int transactionsSize)
+{
+    const int currentIndex = blockIdx.x * blockDim.x + threadIdx.x;
+    if(currentIndex >= transactionsSize) {
+        return;
+    }
+    transactions[currentIndex].calculate(matrix, multipliers, subtractors, matrixRowSize, multipliersRowSize);
+
+    }
 
 void calculateGaussianElimination(std::vector<double>& matrix, int rows, int columns) {
     double* cudaMatrix = nullptr;
@@ -73,6 +85,36 @@ void calculateGaussianElimination(std::vector<double>& matrix, int rows, int col
     cudaFree(cudaMultipliers);
     cudaFree(cudaMatrix);
 }
+
+void calculateFoataElimination(std::vector<double> &matrix, int rows, int columns, const std::vector<std::vector<Transaction> > &foata) {
+    double* cudaMatrix = nullptr;
+    cudaMalloc((void**)&cudaMatrix, rows * columns * sizeof(double));
+    cudaMemcpy(cudaMatrix, matrix.data(), rows * columns * sizeof(double), cudaMemcpyHostToDevice);
+
+    std::vector multipliers(rows * rows, 0.0);
+    double* cudaMultipliers = nullptr;
+    cudaMalloc((void**)&cudaMultipliers, rows * rows * sizeof(double));
+
+    std::vector subtractors(rows * rows * columns, 0.0);
+    double* cudaSubtractors = nullptr;
+    cudaMalloc((void**)&cudaSubtractors, rows * rows * columns * sizeof(double));
+
+    Transaction* cudaLevel = nullptr;
+    for(const auto& level : foata) {
+        cudaMalloc((void**)&cudaLevel, level.size() * sizeof(Transaction));
+        cudaMemcpy(cudaLevel,  level.data(), level.size() * sizeof(Transaction), cudaMemcpyHostToDevice);
+        int blocks = level.size() / 1024 + 1;
+        performTransactions<<<blocks, 1024>>>(cudaMatrix, cudaMultipliers, cudaSubtractors,
+                                    columns, rows, cudaLevel, level.size());
+        cudaDeviceSynchronize();
+        cudaFree(cudaLevel);
+    }
+    cudaMemcpy(matrix.data(), cudaMatrix, rows * columns * sizeof(double), cudaMemcpyDeviceToHost);
+    cudaFree(cudaMultipliers);
+    cudaFree(cudaSubtractors);
+    cudaFree(cudaMatrix);
+}
+
 
 void transformIntoSingular(std::vector<double>& matrix, int rows, int columns) {
     for(int i=rows-1; i>=0; i--) {

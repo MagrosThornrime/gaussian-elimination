@@ -23,9 +23,13 @@ void generateTransactions(std::vector<Transaction>& transactions, int matrixSize
     }
 }
 
-void calculateFoata(int matrixSize) {
+void testFoataElimination() {
+    std::vector<double> matrix;
+    const int rows = readMatrix(matrix, INPUT);
+    const int columns = rows + 1;
+
     std::vector<Transaction> transactions;
-    generateTransactions(transactions, matrixSize);
+    generateTransactions(transactions, rows);
 
     std::map<std::string, Transaction> transactionsMapped;
     std::vector<std::string> word;
@@ -59,8 +63,11 @@ void calculateFoata(int matrixSize) {
     printFoataForm(foata);
     std::cout << std::endl;
 
-
     diekert.saveAsDot(GRAPH_OUTPUT);
+
+    calculateFoataElimination(matrix, rows, columns, foata);
+    transformIntoSingular(matrix, rows, columns);
+    saveMatrix(matrix, rows, columns, OUTPUT);
 }
 
 void testGaussianElimination() {
@@ -73,7 +80,6 @@ void testGaussianElimination() {
 }
 
 int main(){
-    int rows = 4;
-    calculateFoata(rows);
-    // testGaussianElimination();
+    testGaussianElimination();
+    // testFoataElimination();
 }

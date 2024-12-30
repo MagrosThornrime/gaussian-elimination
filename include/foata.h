@@ -1,6 +1,6 @@
 #pragma once
 #include "../include/graphs.h"
-#include "../include/transaction.h"
+#include "../include/transaction.cuh"
 
 // using the dependency graph, connect each Node in the Diekert graph
 void addEdgesFromDependency(DiekertGraph& graph, const DependencyGraph& dependency);
