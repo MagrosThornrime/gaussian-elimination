@@ -86,22 +86,33 @@ std::vector<int> getFoataMaxPaths(DiekertGraph& diekert) {
     return maxPaths;
 }
 
-void printFoataForm(DiekertGraph& diekert, const std::vector<int>& maxPaths) {
-    std::string result;
+void getFoataForm(DiekertGraph& diekert, const std::vector<int>& maxPaths,
+                const std::map<std::string, Transaction>& transactions,
+                std::vector<std::vector<Transaction>>& foata) {
     int levelNumber = 1;
     while(true) {
-        std::string currentLevel;
+        foata.emplace_back();
         for(int i=0; i<diekert.getSize(); i++) {
             if(maxPaths[i] == levelNumber) {
-                currentLevel += diekert.getNode(i).transactionID;
+                std::string id = diekert.getNode(i).transactionID;
+                foata.back().push_back(transactions.at(id));
             }
         }
-        if(currentLevel.empty()) {
-            std::cout << result << std::endl;
+        if(foata.back().empty()) {
+            foata.pop_back();
             return;
         }
-        result += "(" + currentLevel + ")";
         levelNumber++;
+    }
+}
+
+void printFoataForm(const std::vector<std::vector<Transaction>>& foata) {
+    for(const auto& level : foata) {
+        std::cout << "(";
+        for(const auto& transaction : level) {
+            std::cout << transaction.id;
+        }
+        std::cout << ")";
     }
 }
 

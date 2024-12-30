@@ -52,8 +52,13 @@ void calculateFoata(int matrixSize) {
 
     auto diekert = createDiekertGraph(word, dependency);
     auto foataMaxPaths = getFoataMaxPaths(diekert);
+
+    std::vector<std::vector<Transaction>> foata;
+    getFoataForm(diekert, foataMaxPaths, transactionsMapped, foata);
     std::cout << "FNF = ";
-    printFoataForm(diekert, foataMaxPaths);
+    printFoataForm(foata);
+    std::cout << std::endl;
+
 
     diekert.saveAsDot(GRAPH_OUTPUT);
 }
@@ -68,7 +73,7 @@ void testGaussianElimination() {
 }
 
 int main(){
-    // int rows = 4;
-    // calculateFoata(rows);
-    testGaussianElimination();
+    int rows = 4;
+    calculateFoata(rows);
+    // testGaussianElimination();
 }

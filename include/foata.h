@@ -14,8 +14,13 @@ DiekertGraph createDiekertGraph(const std::vector<std::string>& word, const Depe
 // apply a modified BFS to find Foata levels for each Node in Diekert graph
 std::vector<int> getFoataMaxPaths(DiekertGraph& diekert);
 
-// print Foata Normal Form using the vector of levels
-void printFoataForm(DiekertGraph& diekert, const std::vector<int>& maxPaths);
+// get Foata Normal Form using the vector of levels
+void getFoataForm(DiekertGraph& diekert, const std::vector<int>& maxPaths,
+                const std::map<std::string, Transaction>& transactions,
+                std::vector<std::vector<Transaction>>& foata);
+
+// print Foata Normal Form
+void printFoataForm(const std::vector<std::vector<Transaction>>& foata);
 
 // create a dependency graph
 DependencyGraph dependencyGraph(const std::map<std::string, Transaction>& transactions);
