@@ -2,6 +2,6 @@
 cmake-build-debug/
 graph.dot
 build/
-input.txt
-output.txt
 README.md
+output-foata.txt
+output-gaussian.txt

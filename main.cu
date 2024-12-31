@@ -1,12 +1,9 @@
 #include <iostream>
 #include <set>
+#include <chrono>
 
 #include "include/foata.h"
 #include "include/elimination.cuh"
-
-const std::string GRAPH_OUTPUT = "../graph.dot";
-const std::string INPUT = "../input.txt";
-const std::string OUTPUT = "../output.txt";
 
 void generateTransactions(std::vector<Transaction>& transactions, int matrixSize) {
     for(int i=0; i<matrixSize-1; i++) {
@@ -23,9 +20,9 @@ void generateTransactions(std::vector<Transaction>& transactions, int matrixSize
     }
 }
 
-void testFoataElimination() {
+void testFoataElimination(const std::string& inputFile, const std::string& outputFile, const std::string& graphOutputFile) {
     std::vector<double> matrix;
-    const int rows = readMatrix(matrix, INPUT);
+    const int rows = readMatrix(matrix, inputFile);
     const int columns = rows + 1;
 
     std::vector<Transaction> transactions;
@@ -45,6 +42,12 @@ void testFoataElimination() {
     }
     std::cout << "}" << std::endl;
 
+    std::cout << "Word = (";
+    for(const auto& identifier : word) {
+        std::cout << identifier << ", ";
+    }
+    std::cout << ")" << std::endl;
+
     std::cout << "D = ";
     auto dependency = dependencyGraph(transactionsMapped);
     dependency.printEdges();
@@ -63,23 +66,31 @@ void testFoataElimination() {
     printFoataForm(foata);
     std::cout << std::endl;
 
-    diekert.saveAsDot(GRAPH_OUTPUT);
+    diekert.saveAsDot(graphOutputFile);
 
     calculateFoataElimination(matrix, rows, columns, foata);
     transformIntoSingular(matrix, rows, columns);
-    saveMatrix(matrix, rows, columns, OUTPUT);
+    saveMatrix(matrix, rows, columns, outputFile);
 }
 
-void testGaussianElimination() {
+void testGaussianElimination(const std::string& inputFile, const std::string& outputFile) {
     std::vector<double> matrix;
-    const int rows = readMatrix(matrix, INPUT);
+    const int rows = readMatrix(matrix, inputFile);
     const int columns = rows + 1;
     calculateGaussianElimination(matrix, rows, columns);
     transformIntoSingular(matrix, rows, columns);
-    saveMatrix(matrix, rows, columns, OUTPUT);
+    saveMatrix(matrix, rows, columns, outputFile);
 }
 
 int main(){
-    testGaussianElimination();
-    // testFoataElimination();
+    auto start = std::chrono::high_resolution_clock::now();
+    testFoataElimination("../input.txt", "../output-foata.txt", "../graph.dot");
+    auto foata = std::chrono::high_resolution_clock::now();
+    testGaussianElimination("../input.txt", "../output-gaussian.txt");
+    auto gaussian = std::chrono::high_resolution_clock::now();
+    auto foataDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(foata - start);
+    auto gaussianDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(gaussian - foata);
+    std::cout << "\"Foata Elimination\" execution time: " << foataDuration.count() << " ns" << std::endl;
+    std::cout << "Gaussian Elimination execution time: " << gaussianDuration.count() << " ns" << std::endl;
+
 }
