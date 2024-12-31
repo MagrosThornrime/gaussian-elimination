@@ -24,7 +24,7 @@ std::string Transaction::createIdentifier(char type, const std::vector<int>& ind
     std::stringstream identifier;
     identifier << "[" << type;
     for (const auto index : indices) {
-        identifier << "," << index + 1;
+        identifier << "," << index;
     }
     identifier << "]";
     return identifier.str();
