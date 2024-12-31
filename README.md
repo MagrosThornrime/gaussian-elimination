@@ -96,7 +96,10 @@ cd build
 make
 ```
 
-A żeby go wykonać, wystarczy w katalogu build wykonać polecenie `./gauss`.
+Kompilacja może okazać się niemożliwa bez biblioteki `nvidia-cuda-toolkit`, no i oczywiście bez posiadanej biblioteki
+CUDA w odpowiedniej wersji.
+
+Żeby go wykonać, wystarczy w katalogu build wykonać polecenie `./gauss`.
 
 Dane wejściowe należy umieścić w pliku `input.txt` w katalogu głównym projektu. Po wykonaniu programu, w katalogu
 pojawią się pliki wyjściowe:
