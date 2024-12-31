@@ -105,7 +105,6 @@ void calculateFoataElimination(std::vector<double> &matrix, int rows, int column
         int blocks = level.size() / 1024 + 1;
         performTransactions<<<blocks, 1024>>>(cudaMatrix, cudaMultipliers, cudaSubtractors,
                                     columns, rows, cudaLevel, level.size());
-        cudaDeviceSynchronize();
         cudaFree(cudaLevel);
     }
     cudaMemcpy(matrix.data(), cudaMatrix, rows * columns * sizeof(double), cudaMemcpyDeviceToHost);
