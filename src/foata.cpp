@@ -114,6 +114,7 @@ void printFoataForm(const std::vector<std::vector<Transaction>>& foata) {
         }
         std::cout << ")";
     }
+    std::cout << std::endl;
 }
 
 DependencyGraph dependencyGraph(const std::map<std::string, Transaction>& transactions) {

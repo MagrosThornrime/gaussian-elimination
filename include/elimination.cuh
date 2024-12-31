@@ -5,12 +5,12 @@
 
 // find a multiplier for a matrix row, which will be used to subtract it from another row.
 // the function is parallelized on the GPU
-__global__ void findMultiplier(const double* matrix, const int* indices, double* multipliers, int matrixRowSize,
+__global__ void findMultipliers(const double* matrix, const int* indices, double* multipliers, int matrixRowSize,
                                 int indicesSize, int multipliersRowSize);
 
 // multiply a row by the multiplier found before, then subtract it from another row.
 // the function is parallelized on the GPU
-__global__ void multiplyAndSubtractRow(double* matrix, const int* indices, const double* multipliers, int matrixRowSize,
+__global__ void multiplyAndSubtractRows(double* matrix, const int* indices, const double* multipliers, int matrixRowSize,
                                         int indicesSize, int multipliersRowSize);
 
 // perform an array of Transactions, calling .calculate() on each

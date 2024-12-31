@@ -72,7 +72,7 @@ void Transaction::_initializeIdentifiers(const std::vector<int>& indices) {
 
 CUDA_DEV void Transaction::calculate(double *matrix, double *multipliers, double *subtractors,
     int matrixRowSize, int multipliersRowSize) const {
-    int subtractorIndex = i * matrixRowSize * multipliersRowSize +  j * matrixRowSize + k;
+    int subtractorIndex = i * matrixRowSize * multipliersRowSize + j * matrixRowSize + k;
     switch(_type) {
         case multiplier:
             multipliers[k * multipliersRowSize + i] = matrix[k * matrixRowSize + i] / matrix[i * matrixRowSize + i];

@@ -3,7 +3,7 @@
 
 #include "../include/elimination.cuh"
 
-__global__ void findMultiplier(const double* matrix, const int* indices, double* multipliers, int matrixRowSize,
+__global__ void findMultipliers(const double* matrix, const int* indices, double* multipliers, int matrixRowSize,
                                int indicesSize, int multipliersRowSize) {
     const int currentIndex = blockIdx.x * blockDim.x + threadIdx.x;
     if(currentIndex >= indicesSize) {
@@ -14,7 +14,7 @@ __global__ void findMultiplier(const double* matrix, const int* indices, double*
     multipliers[k * multipliersRowSize + i] = matrix[k * matrixRowSize + i] / matrix[i * matrixRowSize + i];
 }
 
-__global__ void multiplyAndSubtractRow(double* matrix, const int* indices, const double* multipliers, int matrixRowSize,
+__global__ void multiplyAndSubtractRows(double* matrix, const int* indices, const double* multipliers, int matrixRowSize,
                                         int indicesSize, int multipliersRowSize) {
     const int currentIndex = blockIdx.x * blockDim.x + threadIdx.x;
     if(currentIndex >= indicesSize) {
@@ -23,7 +23,6 @@ __global__ void multiplyAndSubtractRow(double* matrix, const int* indices, const
     const int i = indices[currentIndex * 3];
     const int j = indices[currentIndex * 3 + 1];
     const int k = indices[currentIndex * 3 + 2];
-
     matrix[k * matrixRowSize + j] -= matrix[i * matrixRowSize + j] * multipliers[k *multipliersRowSize + i];
 }
 
@@ -36,7 +35,7 @@ __global__ void performTransactions(double* matrix, double* multipliers, double*
     }
     transactions[currentIndex].calculate(matrix, multipliers, subtractors, matrixRowSize, multipliersRowSize);
 
-    }
+}
 
 void calculateGaussianElimination(std::vector<double>& matrix, int rows, int columns) {
     double* cudaMatrix = nullptr;
@@ -66,7 +65,7 @@ void calculateGaussianElimination(std::vector<double>& matrix, int rows, int col
         cudaMemcpy(cudaIndicesMultiplier, indicesMultiplier.data(), indicesMultiplier.size() * sizeof(int), cudaMemcpyHostToDevice);
 
         int blocks = indicesMultiplier.size() / 1024 + 1;
-        findMultiplier<<<blocks, 1024>>>(cudaMatrix, cudaIndicesMultiplier, cudaMultipliers,
+        findMultipliers<<<blocks, 1024>>>(cudaMatrix, cudaIndicesMultiplier, cudaMultipliers,
                                         columns, indicesMultiplier.size() / 2, rows);
 
         int* cudaIndicesSubtract = nullptr;
@@ -74,7 +73,7 @@ void calculateGaussianElimination(std::vector<double>& matrix, int rows, int col
         cudaMemcpy(cudaIndicesSubtract, indicesSubtract.data(), indicesSubtract.size() * sizeof(int), cudaMemcpyHostToDevice);
 
         blocks = indicesSubtract.size() / 1024 + 1;
-        multiplyAndSubtractRow<<<blocks, 1024>>>(cudaMatrix, cudaIndicesSubtract, cudaMultipliers,  columns,
+        multiplyAndSubtractRows<<<blocks, 1024>>>(cudaMatrix, cudaIndicesSubtract, cudaMultipliers,  columns,
                         indicesSubtract.size() / 3, rows);
 
         cudaFree(cudaIndicesMultiplier);
@@ -137,7 +136,7 @@ void saveMatrix(const std::vector<double>& matrix, int rows, int columns, const 
         file << std::endl;
     }
     for(int i=0; i<rows; i++) {
-        file <<std::setprecision(16) << std::fixed << matrix[i*columns + columns - 1] << " ";
+        file << std::setprecision(16) << std::fixed << matrix[i*columns + columns - 1] << " ";
     }
     file << std::endl;
     file.close();

@@ -34,7 +34,7 @@ struct Transaction {
     static std::string createIdentifier(char type, const std::vector<int>& indices);
 
     // calculate the operation
-   CUDA_DEV void calculate(double* matrix, double* multipliers, double* subtractors,
+    CUDA_DEV void calculate(double* matrix, double* multipliers, double* subtractors,
                             int matrixRowSize, int multipliersRowSize) const;
 
 private:

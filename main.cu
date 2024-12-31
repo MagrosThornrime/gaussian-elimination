@@ -64,7 +64,6 @@ void testFoataElimination(const std::string& inputFile, const std::string& outpu
     getFoataForm(diekert, foataMaxPaths, transactionsMapped, foata);
     std::cout << "FNF = ";
     printFoataForm(foata);
-    std::cout << std::endl;
 
     diekert.saveAsDot(graphOutputFile);
 
