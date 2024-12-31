@@ -33,3 +33,6 @@ void saveMatrix(const std::vector<double>& matrix, int rows, int columns, const 
 
 // read matrix from a file, return its number of rows
 int readMatrix(std::vector<double>& matrix, const std::string& path);
+
+// generate a list of transactions needed to calculate the Gaussian Elimination
+void generateTransactions(std::vector<Transaction>& transactions, int matrixSize);

@@ -163,3 +163,18 @@ int readMatrix(std::vector<double>& matrix, const std::string& path) {
     }
     return rows;
 }
+
+void generateTransactions(std::vector<Transaction>& transactions, int matrixSize) {
+    for(int i=0; i<matrixSize-1; i++) {
+        for(int k=i+1; k<matrixSize; k++) {
+            auto multiplier = Transaction(TransactionType::multiplier, {i, k});
+            transactions.push_back(multiplier);
+            for(int j=i; j<matrixSize+1; j++) {
+                auto multiply = Transaction(TransactionType::multiply, {i, j, k});
+                transactions.push_back(multiply);
+                auto subtract = Transaction(TransactionType::subtract, {i, j, k});
+                transactions.push_back(subtract);
+            }
+        }
+    }
+}
